@@ -63,21 +63,28 @@ const server = http.createServer((req, res) => {
   // console.log(req);
   // res.end("Hello from the server!");
 
+  // Get request URL
+  const { query, pathname } = url.parse(req.url, true);
+
   // Overview page
-  if (req.url === '/' || req.url === '/overview') {
-    res.writeHead(200, { 'Content-type': 'text/html' });
+  if (pathname === '/' || pathname === '/overview') {
     const cardsHtml = dataObj
       .map(el => replaceTemplate(el, cardTemplate))
       .join('');
     const output = overviewTemplate.replace('{%PRODUCT_CARDS%}', cardsHtml);
+    res.writeHead(200, { 'Content-type': 'text/html' });
     res.end(output);
 
     // Product page
-  } else if (req.url === '/product') {
-    res.end('PRODUCT');
+  } else if (pathname === '/product') {
+    const id = +query.id;
+    const product = dataObj[id];
+    const output = replaceTemplate(product, productTemplate);
+    res.writeHead(200, { 'Content-type': 'text/html' });
+    res.end(output);
 
     // API
-  } else if (req.url === '/api') {
+  } else if (pathname === '/api') {
     res.end(data);
 
     // Not found
