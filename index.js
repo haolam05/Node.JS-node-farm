@@ -1,9 +1,9 @@
 // const hello = "Hello World";
 // console.log(hello);
 
-const fs = require("fs");
-const http = require("http");
-const url = require("url");
+const fs = require('fs');
+const http = require('http');
+const url = require('url');
 
 /////////////////////////////////////////////////////////////
 // Files
@@ -31,46 +31,64 @@ const url = require("url");
 // Server
 // Create a local server to receive data from
 // register callback on request
-const card = fs.readFileSync(
+const cardTemplate = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
-  "utf-8"
+  'utf-8'
 );
-const cards = fs.readFileSync(
+const overviewTemplate = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
-  "utf-8"
+  'utf-8'
 );
-const product = fs.readFileSync(
+const productTemplate = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
-  "utf-8"
+  'utf-8'
 );
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
+
+const replaceTemplate = function (el, template) {
+  let output = template.replaceAll('{%ID%}', el.id);
+  output = output.replaceAll('{%PRODUCT_NAME%}', el.productName);
+  output = output.replaceAll('{%IMAGE%}', el.image);
+  output = output.replaceAll('{%FROM%}', el.from);
+  output = output.replaceAll('{%NUTRIENTS%}', el.nutrients);
+  output = output.replaceAll('{%QUANTITY%}', el.quantity);
+  output = output.replaceAll('{%PRICE%}', el.price);
+  output = output.replaceAll('{%DESCRIPTION%}', el.description);
+  if (!el.organic) output = output.replaceAll('{%NOT_ORGANIC%}', 'not-organic');
+  return output;
+};
+
 const server = http.createServer((req, res) => {
   // console.log(req);
   // res.end("Hello from the server!");
 
   // Overview page
-  if (req.url === "/" || req.url === "/overview") {
-    // const output = replaceTemplate()
-    res.end("OVERVIEW");
+  if (req.url === '/' || req.url === '/overview') {
+    res.writeHead(200, { 'Content-type': 'text/html' });
+    const cardsHtml = dataObj
+      .map(el => replaceTemplate(el, cardTemplate))
+      .join('');
+    const output = overviewTemplate.replace('{%PRODUCT_CARDS%}', cardsHtml);
+    res.end(output);
 
     // Product page
-  } else if (req.url === "/product") {
-    res.end("PRODUCT");
+  } else if (req.url === '/product') {
+    res.end('PRODUCT');
 
     // API
-  } else if (req.url === "/api") {
+  } else if (req.url === '/api') {
     res.end(data);
 
     // Not found
   } else {
     res.writeHead(404, {
-      "Content-type": "text/html",
-      "my-own-header": "hello-world",
+      'Content-type': 'text/html',
+      'my-own-header': 'hello-world',
     });
-    res.end("<h1>Page Not Found</h1>");
+    res.end('<h1>Page Not Found</h1>');
   }
 });
-server.listen(8000, "127.0.0.1", () => {
-  console.log("Listening to requests on port 8000");
+server.listen(8000, '127.0.0.1', () => {
+  console.log('Listening to requests on port 8000');
 });
