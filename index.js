@@ -31,6 +31,7 @@ const url = require("url");
 // Server
 // Create a local server to receive data from
 // register callback on request
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const server = http.createServer((req, res) => {
   // console.log(req);
   // res.end("Hello from the server!");
@@ -38,6 +39,8 @@ const server = http.createServer((req, res) => {
     res.end("OVERVIEW");
   } else if (req.url === "/product") {
     res.end("PRODUCT");
+  } else if (req.url === "/api") {
+    res.end(data);
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
