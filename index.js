@@ -1,10 +1,13 @@
 // const hello = "Hello World";
 // console.log(hello);
 
+const fs = require("fs");
+const http = require("http");
+const url = require("url");
+
 /////////////////////////////////////////////////////////////
 // Files
 // Synchronous - Blocking
-// const fs = require("fs");
 // const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
 // console.log(textIn);
 // const textOut = `This is what we knwo about the avocado: ${textIn}.\nCreated on ${Date.now()}`;
@@ -26,12 +29,23 @@
 
 /////////////////////////////////////////////////////////////
 // Server
-const http = require("http");
+// Create a local server to receive data from
+// register callback on request
 const server = http.createServer((req, res) => {
   // console.log(req);
-  res.end("Hello from the server!");
+  // res.end("Hello from the server!");
+  if (req.url === "/" || req.url === "/overview") {
+    res.end("OVERVIEW");
+  } else if (req.url === "/product") {
+    res.end("PRODUCT");
+  } else {
+    res.writeHead(404, {
+      "Content-type": "text/html",
+      "my-own-header": "hello-world",
+    });
+    res.end("<h1>Page Not Found</h1>");
+  }
 });
-
 server.listen(8000, "127.0.0.1", () => {
   console.log("Listening to requests on port 8000");
 });
