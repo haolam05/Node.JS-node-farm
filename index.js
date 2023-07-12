@@ -31,16 +31,38 @@ const url = require("url");
 // Server
 // Create a local server to receive data from
 // register callback on request
+const card = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+const cards = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  "utf-8"
+);
+const product = fs.readFileSync(
+  `${__dirname}/templates/template-product.html`,
+  "utf-8"
+);
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const dataObj = JSON.parse(data);
 const server = http.createServer((req, res) => {
   // console.log(req);
   // res.end("Hello from the server!");
+
+  // Overview page
   if (req.url === "/" || req.url === "/overview") {
+    // const output = replaceTemplate()
     res.end("OVERVIEW");
+
+    // Product page
   } else if (req.url === "/product") {
     res.end("PRODUCT");
+
+    // API
   } else if (req.url === "/api") {
     res.end(data);
+
+    // Not found
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
