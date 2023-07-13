@@ -71,7 +71,7 @@ const server = http.createServer((req, res) => {
     const product = dataObj[id];
     const output = replaceTemplate(product, productTemplate);
     res.writeHead(200, { 'Content-type': 'text/html' });
-    res.end(`output`);
+    res.end(output);
 
     // API
   } else if (pathname === '/api') {
